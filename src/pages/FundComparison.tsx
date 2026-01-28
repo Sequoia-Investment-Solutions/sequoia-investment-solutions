@@ -4,9 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, TrendingDown, ArrowRight, Filter, X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { TrendingUp, TrendingDown, Filter, X, FileText, Download, Eye } from "lucide-react";
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 
 const allFunds = [
   {
@@ -21,6 +21,7 @@ const allFunds = [
     ocf: 0.65,
     objective: "Long-term capital growth through diversified equity exposure",
     assetAllocation: { equity: 85, bonds: 10, alternatives: 5 },
+    factsheetUrl: "/factsheets/sequoia-growth-portfolio.pdf",
   },
   {
     id: "balanced",
@@ -34,6 +35,7 @@ const allFunds = [
     ocf: 0.58,
     objective: "Balance between growth and income with managed volatility",
     assetAllocation: { equity: 60, bonds: 30, alternatives: 10 },
+    factsheetUrl: "/factsheets/sequoia-balanced-portfolio.pdf",
   },
   {
     id: "income",
@@ -47,6 +49,7 @@ const allFunds = [
     ocf: 0.52,
     objective: "Consistent income generation with capital preservation",
     assetAllocation: { equity: 35, bonds: 55, alternatives: 10 },
+    factsheetUrl: "/factsheets/sequoia-income-portfolio.pdf",
   },
   {
     id: "defensive",
@@ -60,6 +63,7 @@ const allFunds = [
     ocf: 0.45,
     objective: "Capital preservation with modest growth in stable conditions",
     assetAllocation: { equity: 20, bonds: 70, alternatives: 10 },
+    factsheetUrl: "/factsheets/sequoia-defensive-portfolio.pdf",
   },
   {
     id: "adventurous",
@@ -73,6 +77,7 @@ const allFunds = [
     ocf: 0.72,
     objective: "Maximum long-term growth for investors comfortable with volatility",
     assetAllocation: { equity: 95, bonds: 0, alternatives: 5 },
+    factsheetUrl: "/factsheets/sequoia-adventurous-portfolio.pdf",
   },
   {
     id: "esg-balanced",
@@ -86,6 +91,7 @@ const allFunds = [
     ocf: 0.62,
     objective: "Sustainable investing with balanced risk-return profile",
     assetAllocation: { equity: 55, bonds: 35, alternatives: 10 },
+    factsheetUrl: "/factsheets/sequoia-esg-balanced.pdf",
   },
 ];
 
@@ -301,22 +307,55 @@ const FundComparison = () => {
                       <td key={fund.id} className="p-4 font-medium">{fund.aum}</td>
                     ))}
                   </tr>
-                  <tr>
+                  <tr className="border-b border-border">
                     <td className="p-4 text-muted-foreground">Equity Allocation</td>
                     {selectedFundData.map(fund => (
                       <td key={fund.id} className="p-4 font-medium">{fund.assetAllocation.equity}%</td>
                     ))}
                   </tr>
+                  <tr>
+                    <td className="p-4 text-muted-foreground">Factsheet</td>
+                    {selectedFundData.map(fund => (
+                      <td key={fund.id} className="p-4">
+                        <div className="flex items-center gap-2">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 px-2">
+                                <Eye className="h-4 w-4 mr-1" />
+                                View
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-4xl h-[80vh]">
+                              <DialogHeader>
+                                <DialogTitle>{fund.name} - Factsheet</DialogTitle>
+                              </DialogHeader>
+                              <div className="flex-1 overflow-hidden rounded-lg border border-border bg-muted/30 flex flex-col items-center justify-center p-8">
+                                <FileText className="h-16 w-16 text-muted-foreground mb-4" />
+                                <p className="text-muted-foreground text-center mb-4">
+                                  PDF Preview would display here.<br />
+                                  <span className="text-sm">In production, this would embed the actual PDF document.</span>
+                                </p>
+                                <Button asChild>
+                                  <a href={fund.factsheetUrl} download>
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Download PDF
+                                  </a>
+                                </Button>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                          <Button variant="outline" size="sm" className="h-8 px-2" asChild>
+                            <a href={fund.factsheetUrl} download>
+                              <Download className="h-4 w-4 mr-1" />
+                              Download
+                            </a>
+                          </Button>
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
                 </tbody>
               </table>
-            </div>
-
-            <div className="mt-8 text-center">
-              <Button size="lg" asChild>
-                <Link to="/contact">
-                  Request Factsheets <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
             </div>
           </div>
         </section>
