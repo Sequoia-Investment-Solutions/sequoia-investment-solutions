@@ -22,6 +22,7 @@ const solutions = [
 
 const tools = [
   { title: "Fund Comparison Hub", href: "/fund-comparison", description: "Compare funds side-by-side" },
+  { title: "DFM Value Calculator", href: "/tools/dfm-calculator", description: "Demonstrate DFM benefits to clients" },
   { title: "Risk Profiling Quiz", href: "/tools/risk-profile", description: "Assess your client's risk appetite" },
   { title: "Fund Questionnaire", href: "/tools/questionnaire", description: "Get personalized fund recommendations" },
 ];

@@ -6,8 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, Clock, PoundSterling, Calculator, ChartLine, Users, ArrowRight, Info } from "lucide-react";
-import { useState, useMemo } from "react";
+import { TrendingUp, Clock, PoundSterling, Calculator, ChartLine, Users, ArrowRight, Info, Download } from "lucide-react";
+import { useState, useMemo, useRef } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from "recharts";
 import { Tooltip as UITooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -18,6 +18,135 @@ const DFMCalculator = () => {
   const [currentApproach, setCurrentApproach] = useState("advisory");
   const [clientCount, setClientCount] = useState(50);
   const [hoursPerClient, setHoursPerClient] = useState(8);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  const handleExportPDF = () => {
+    const currentAssumptions = assumptions[currentApproach as keyof typeof assumptions];
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>DFM Value Calculator Results - Sequoia Investment Solutions</title>
+        <style>
+          body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; color: #163B4F; }
+          .header { text-align: center; margin-bottom: 40px; border-bottom: 3px solid #163B4F; padding-bottom: 20px; }
+          .header h1 { color: #163B4F; margin: 0 0 8px 0; font-size: 28px; }
+          .header p { color: #455b70; margin: 0; font-size: 14px; }
+          .section { margin-bottom: 30px; }
+          .section h2 { color: #163B4F; border-bottom: 1px solid #ddd; padding-bottom: 8px; font-size: 18px; }
+          .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 20px 0; }
+          .metric { background: #f8fafc; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #e2e8f0; }
+          .metric-value { font-size: 24px; font-weight: bold; color: #163B4F; }
+          .metric-label { font-size: 12px; color: #455b70; margin-top: 4px; }
+          .highlight { background: #163B4F; color: white; }
+          .highlight .metric-value { color: white; }
+          .highlight .metric-label { color: rgba(255,255,255,0.8); }
+          .table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+          .table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+          .table th { background: #f8fafc; color: #163B4F; font-weight: 600; }
+          .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 11px; color: #455b70; }
+          .date { text-align: right; color: #455b70; font-size: 12px; margin-bottom: 20px; }
+          @media print { body { padding: 20px; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Sequoia Investment Solutions</h1>
+          <p>DFM Value Calculator Results</p>
+        </div>
+        <p class="date">Generated: ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+        
+        <div class="section">
+          <h2>Input Parameters</h2>
+          <table class="table">
+            <tr><td>Current Portfolio Value</td><td><strong>${formatCurrency(portfolioValue)}</strong></td></tr>
+            <tr><td>Annual Contribution</td><td><strong>${formatCurrency(annualContribution)}</strong></td></tr>
+            <tr><td>Investment Horizon</td><td><strong>${timeHorizon} years</strong></td></tr>
+            <tr><td>Current Approach</td><td><strong>${currentApproach === 'diy' ? 'DIY / Execution Only' : 'Advisory Service'}</strong></td></tr>
+            <tr><td>Number of Clients</td><td><strong>${clientCount}</strong></td></tr>
+          </table>
+        </div>
+
+        <div class="section">
+          <h2>Key Results</h2>
+          <div class="metrics">
+            <div class="metric highlight">
+              <div class="metric-value">${formatCurrency(calculations.dfmFinalValue)}</div>
+              <div class="metric-label">DFM Portfolio Value (${timeHorizon}yr)</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value" style="color: #22c55e;">+${formatCurrency(calculations.valueAdded)}</div>
+              <div class="metric-label">Value Added by DFM (+${calculations.percentageGain}%)</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">${calculations.timeSaved} hrs</div>
+              <div class="metric-label">Time Saved Annually</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Comparison Analysis</h2>
+          <table class="table">
+            <tr>
+              <th>Metric</th>
+              <th>${currentApproach === 'diy' ? 'DIY Approach' : 'Advisory Service'}</th>
+              <th>Sequoia DFM</th>
+            </tr>
+            <tr>
+              <td>Expected Return</td>
+              <td>${currentAssumptions.returnRate}% p.a.</td>
+              <td>${assumptions.dfm.returnRate}% p.a.</td>
+            </tr>
+            <tr>
+              <td>Annual Fees</td>
+              <td>${currentAssumptions.fees}%</td>
+              <td>${assumptions.dfm.fees}%</td>
+            </tr>
+            <tr>
+              <td>Net Return</td>
+              <td>${(currentAssumptions.returnRate - currentAssumptions.fees).toFixed(2)}%</td>
+              <td>${(assumptions.dfm.returnRate - assumptions.dfm.fees).toFixed(2)}%</td>
+            </tr>
+            <tr>
+              <td>Hours per Client</td>
+              <td>${currentAssumptions.timePerClient} hrs</td>
+              <td>${assumptions.dfm.timePerClient} hrs</td>
+            </tr>
+            <tr>
+              <td>Final Portfolio Value</td>
+              <td>${formatCurrency(calculations.currentFinalValue)}</td>
+              <td><strong>${formatCurrency(calculations.dfmFinalValue)}</strong></td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="section">
+          <h2>Time Savings Analysis</h2>
+          <table class="table">
+            <tr><td>Current hours per year (${clientCount} clients)</td><td>${calculations.currentTimeSpent} hours</td></tr>
+            <tr><td>DFM hours per year</td><td>${calculations.dfmTimeSpent} hours</td></tr>
+            <tr><td><strong>Annual time saved</strong></td><td><strong>${calculations.timeSaved} hours</strong></td></tr>
+          </table>
+        </div>
+
+        <div class="footer">
+          <p><strong>Important Notice:</strong> These projections are for illustrative purposes only. Past performance is not indicative of future results. Actual returns may vary based on market conditions and individual circumstances.</p>
+          <p style="margin-top: 15px;">Sequoia Investment Solutions is authorised and regulated by the Financial Conduct Authority.</p>
+        </div>
+      </body>
+      </html>
+    `;
+    
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
+  };
 
   // Assumptions for different approaches
   const assumptions = {
@@ -268,7 +397,15 @@ const DFMCalculator = () => {
             </div>
 
             {/* Results Panel */}
-            <div className="lg:col-span-3 space-y-6">
+            <div className="lg:col-span-3 space-y-6" ref={resultsRef}>
+              {/* Export Button */}
+              <div className="flex justify-end">
+                <Button onClick={handleExportPDF} variant="outline">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export Results as PDF
+                </Button>
+              </div>
+
               {/* Key Metrics */}
               <div className="grid sm:grid-cols-3 gap-4">
                 <Card className="bg-primary text-primary-foreground">
