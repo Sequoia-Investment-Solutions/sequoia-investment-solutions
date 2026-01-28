@@ -11,6 +11,7 @@ import Contact from "./pages/Contact";
 import FundComparison from "./pages/FundComparison";
 import Questionnaire from "./pages/Questionnaire";
 import DFMCalculator from "./pages/DFMCalculator";
+import RiskProfilingQuiz from "./pages/RiskProfilingQuiz";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,7 +33,7 @@ const App = () => (
           <Route path="/fund-comparison" element={<FundComparison />} />
           <Route path="/tools/questionnaire" element={<Questionnaire />} />
           <Route path="/tools/dfm-calculator" element={<DFMCalculator />} />
-          <Route path="/tools/risk-profile" element={<Contact />} />
+          <Route path="/tools/risk-profile" element={<RiskProfilingQuiz />} />
           <Route path="/portal" element={<Contact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

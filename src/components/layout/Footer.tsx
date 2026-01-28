@@ -11,6 +11,7 @@ const footerLinks = {
   ],
   resources: [
     { title: "Fund Comparison", href: "/fund-comparison" },
+    { title: "DFM Value Calculator", href: "/tools/dfm-calculator" },
     { title: "Risk Profiling Quiz", href: "/tools/risk-profile" },
     { title: "Market Insights", href: "/insights" },
     { title: "Knowledge Centre", href: "/insights/knowledge" },
