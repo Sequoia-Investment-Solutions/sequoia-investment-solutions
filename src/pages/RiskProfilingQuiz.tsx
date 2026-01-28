@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Shield, TrendingUp, AlertTriangle, CheckCircle, ArrowRight, ArrowLeft, RotateCcw, Download, Target, Clock, PieChart } from "lucide-react";
 import { useState, useMemo } from "react";
+import { RecommendedFunds } from "@/components/quiz/RecommendedFunds";
 
 interface Question {
   id: number;
@@ -553,28 +554,13 @@ const RiskProfilingQuiz = () => {
               </Card>
             </div>
 
-            <Card className="mt-6 bg-primary/5 border-primary/20">
-              <CardContent className="pt-6">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Target className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground">Ready to implement this profile?</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Explore our model portfolios matched to this risk level
-                      </p>
-                    </div>
-                  </div>
-                  <Button asChild>
-                    <a href="/fund-comparison">
-                      View Matching Funds <ArrowRight className="ml-2 h-4 w-4" />
-                    </a>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Recommended Funds Section */}
+            <div className="mt-8 pt-8 border-t border-border">
+              <RecommendedFunds 
+                riskLevel={results.profile.level} 
+                profileName={results.profile.name} 
+              />
+            </div>
 
             <p className="text-xs text-muted-foreground mt-6 text-center">
               This assessment is for guidance purposes only and should be used as part of a comprehensive 
