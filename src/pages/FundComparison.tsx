@@ -240,6 +240,53 @@ const FundComparison = () => {
                   </div>
                 </div>
 
+                {/* Factsheet buttons */}
+                <div className="flex items-center gap-2 pt-4 border-t border-border">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 flex-1"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        View Factsheet
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl h-[80vh]">
+                      <DialogHeader>
+                        <DialogTitle>{fund.name} - Factsheet</DialogTitle>
+                      </DialogHeader>
+                      <div className="flex-1 overflow-hidden rounded-lg border border-border bg-muted/30 flex flex-col items-center justify-center p-8">
+                        <FileText className="h-16 w-16 text-muted-foreground mb-4" />
+                        <p className="text-muted-foreground text-center mb-4">
+                          PDF Preview would display here.<br />
+                          <span className="text-sm">In production, this would embed the actual PDF document.</span>
+                        </p>
+                        <Button asChild>
+                          <a href={fund.factsheetUrl} download>
+                            <Download className="h-4 w-4 mr-2" />
+                            Download PDF
+                          </a>
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-8 flex-1" 
+                    asChild
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <a href={fund.factsheetUrl} download onClick={(e) => e.stopPropagation()}>
+                      <Download className="h-4 w-4 mr-1" />
+                      Download
+                    </a>
+                  </Button>
+                </div>
+
                 {selectedFunds.includes(fund.id) && (
                   <div className="mt-4 pt-4 border-t border-border">
                     <span className="text-sm font-medium text-accent">✓ Selected for comparison</span>
